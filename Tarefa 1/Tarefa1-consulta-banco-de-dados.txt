@@ -1,3 +1,50 @@
+----------------------------------------------------
+-- CRIAR TABELA DEPARTAMENTO
+----------------------------------------------------
+CREATE TABLE Departamento (
+    Id INT PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL
+);
+
+----------------------------------------------------
+-- CRIAR TABELA PESSOA
+----------------------------------------------------
+CREATE TABLE Pessoa (
+    Id INT PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Salario INT NOT NULL,
+    DeptId INT NOT NULL,
+    FOREIGN KEY (DeptId) REFERENCES Departamento(Id)
+);
+
+----------------------------------------------------
+-- POPULAR TABELA DEPARTAMENTO
+----------------------------------------------------
+INSERT INTO Departamento (Id, Nome) VALUES
+(1, 'TI'),
+(2, 'Vendas');
+
+----------------------------------------------------
+-- POPULAR TABELA PESSOA (exatamente como no enunciado)
+----------------------------------------------------
+INSERT INTO Pessoa (Id, Nome, Salario, DeptId) VALUES
+(1, 'Joe',    70000, 1),
+(2, 'Henry',  80000, 2),
+(3, 'Sam',    60000, 2),
+(4, 'Max',    90000, 1);
+
+----------------------------------------------------
+-- OPCIONAL: INSERIR EMPATE 
+----------------------------------------------------
+INSERT INTO Pessoa (Id, Nome, Salario, DeptId) VALUES
+(5, 'Laura', 90000, 1);   -- Empate com Max
+INSERT INTO Pessoa (Id, Nome, Salario, DeptId) VALUES
+(6, 'Ana',   80000, 2);   -- Empate com Henry
+
+----------------------------------------------------
+-- CONSULTA (DENSE_RANK)
+----------------------------------------------------
+
 WITH CTE AS (
     SELECT
         p.Nome AS Pessoa,
@@ -12,4 +59,5 @@ WITH CTE AS (
 )
 SELECT Departamento, Pessoa, Salario
 FROM CTE
+
 WHERE rk = 1;
