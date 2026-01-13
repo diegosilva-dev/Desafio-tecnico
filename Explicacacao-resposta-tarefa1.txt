@@ -1,0 +1,43 @@
+## Explicando o por que usar DENSE_RANK() no problema apresentado ##
+
+
+Quando procuramos todos os colaboradores com maior salário de cada departamento, considerei a seguinte lógica:
+• Se uma pessoa tem o maior salário ela deve aparecer;
+• Se duas têm o mesmo maior salário as duas devem aparecer;
+• Não queremos excluir ou pular posições por causa de empates;
+• Queremos uma forma simples e clara de isolar só os primeiros colocados e o DENSE_RANK() faz exatamente isso.
+
+O DENSE_RANK() produz a classificação sem pular números, mesmo quando há empates.
+Em cada departamento:
+• O maior salário recebe rk = 1;
+• Os salários empatados todos ficam com rk = 1;
+• O próximo salário diferente → rk = 2;
+Essa é a chave para permitir empates corretos.
+
+
+## A escolha do PARTITION BY - "PARTITION BY p.DeptId" ##
+
+• Divide os dados por departamento;
+• O SQL Server passa a tratar cada departamento como uma tabela separada para fins de classificação;
+• Cada partição começa sua numeração pelo número 1;
+
+Por exemplo: Para TI, ele avalia apenas pessoas de TI. Para Vendas, somente pessoas de Vendas. Sem isso, o ranking seria global, o que não queremos.
+
+
+## A escolha do ORDER BY - "ORDER BY p.Salario DESC" ##
+
+• Ordena cada partição do maior para o menor salário;
+• A pessoa com maior salário sempre será classificada como rk = 1;
+Se fosse ASC, o menor salário seria o 1º — não é o que queremos.
+
+
+## Por que WHERE rk = 1? ##
+
+Porque rk = 1 significa sempre “a melhor posição dentro do departamento”;
+• Correspondente ao maior salário;
+• Independentemente de quantas pessoas estejam empatadas.
+
+Logo, filtrar rk = 1 retorna exatamente o conjunto desejado:
+• 1 pessoa, se só ela tem o maior salário;
+• 2 ou mais, se houver empate;
+• Sem necessidade de lógica adicional.
